@@ -40,10 +40,10 @@ class CrossingHelper(parent: LazyModule with LazyScope)(implicit valName: ValNam
   // TileLink
 
   def crossTLSyncInOut(out: Boolean)(params: BufferParams = BufferParams.default)(implicit p: Parameters): TLNode = {
-    val sync_xing = parent { LazyModule(new TLBuffer(params)).node }
-    crossingCheck(out, sync_xing, sync_xing)
-    if (out) parent { TLIdentityNode()(valName) :*=* sync_xing }
-      else   parent { sync_xing :*=* TLIdentityNode()(valName) }
+    lazy val sync_xing = LazyModule(new TLBuffer(params))
+    crossingCheck(out, sync_xing.node, sync_xing.node)
+    if (!out) parent { TLIdentityNode()(valName) :*=* sync_xing.node }
+      else   parent { sync_xing.node :*=* TLIdentityNode()(valName) }
   }
 
   def crossTLAsyncInOut(out: Boolean)(depth: Int = 8, sync: Int = 3)(implicit p: Parameters): TLNode = {
